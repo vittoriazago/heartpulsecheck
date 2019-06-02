@@ -28,10 +28,10 @@ namespace HealthCheck.Api.Core.HealthCheckers
             }
             catch (SqlException)
             {
-                return HealthCheckResult.Unhealthy();
+                //return Task.FromResult(HealthCheckResult.Unhealthy());
             }
 
-            return HealthCheckResult.Healthy();
+            return Task.FromResult(HealthCheckResult.Healthy());
         }
     }
 }

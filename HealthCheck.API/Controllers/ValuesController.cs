@@ -9,31 +9,24 @@ namespace HealthCheck.API.Controllers
 {
     public class ValuesController : ApiController
     {
+        ISomeInterfaceNotImplemented _someInterfaceNotImplemented;
+
+        public ValuesController(ISomeInterfaceNotImplemented someInterfaceNotImplemented)
+        {
+            _someInterfaceNotImplemented = someInterfaceNotImplemented;
+        }
+
         // GET api/values
         public IEnumerable<string> Get()
         {
+            _someInterfaceNotImplemented.doSomething();
             return new string[] { "value1", "value2" };
         }
+        
+    }
 
-        // GET api/values/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
-        }
+    public interface ISomeInterfaceNotImplemented
+    {
+        void doSomething();
     }
 }
