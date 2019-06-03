@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCheck.API", "HealthCheck.API\HealthCheck.API.csproj", "{356CC350-CB84-4646-A0B4-13FE310DCE5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCheck.Helper", "HealthCheck.Helper\HealthCheck.Helper.csproj", "{C7BC3218-359D-492F-A5D5-F2171E11E8DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCheck.Helper", "HealthCheck.Helper\HealthCheck.Helper.csproj", "{C7BC3218-359D-492F-A5D5-F2171E11E8DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCheck.Api.Core", "HealthCheck.Api.Core\HealthCheck.Api.Core.csproj", "{A2986518-0DD2-4E0E-B9C3-2244044D0914}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCheck.Api.Core", "HealthCheck.Api.Core\HealthCheck.Api.Core.csproj", "{A2986518-0DD2-4E0E-B9C3-2244044D0914}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCheck.API.Test", "HealthCheck.API.Test\HealthCheck.API.Test.csproj", "{047CFAEA-005F-4F6E-A7F9-7BA2CF2D25B6}"
 EndProject
