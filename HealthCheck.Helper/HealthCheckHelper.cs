@@ -1,4 +1,5 @@
 ﻿using HealthCheck.Helper.Models;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace HealthCheck.Helper
 {
     public class HealthCheckHelper
     {
-        public static List<ErrorDto> TestaControllersInjection(string nomeAPI)
+        public static List<ErrorDto> TestaControllersInjection(string nomeAPI, IContainer container)
         {
             var errors = new List<ErrorDto>();
             var mensagens = new List<string>();
@@ -16,18 +17,18 @@ namespace HealthCheck.Helper
                                         .GetTypes()
                                         .Where(x => !string.IsNullOrEmpty(x.Namespace))
                                         .Where(x => x.IsClass)
-                                        .Where(x => x.Name.Contains("Controller"))
+                                        .Where(x => x.Name.Contains("Controller") && !x.Name.Contains("HealthCheck"))
                                         .ToList();
-
-            foreach (var controller in controllers)
+            
+            foreach (var controllerType in controllers)
             {
                 try
                 {
-                    controller.GetConstructor(new Type[] { }).Invoke(new object[] { });
+                    container.GetInstance(controllerType);
                 }
                 catch (Exception ex)
                 {
-                    mensagens.Add($"Erro ao instanciar controller: {controller.Name}; {ex.Message}");
+                    mensagens.Add($"Erro ao instanciar controller: {controllerType.Name}; {ex.Message}");
                 }
             }
             if (mensagens.Any())
@@ -39,6 +40,38 @@ namespace HealthCheck.Helper
 
             return errors;
         }
+
+        public static List<ErrorDto> TestaConnectionString(string connectionString, string sql)
+        {
+            var errors = new List<ErrorDto>();
+            var mensagens = new List<string>();
+          
+            //try
+            //{
+            //    using (var connection = new OracleConnection(connectionString))
+            //    {
+            //        await connection.OpenAsync();
+            //        using (var command = connection.CreateCommand())
+            //        {
+            //            command.CommandText = sql;
+            //            await command.ExecuteScalarAsync();
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    mensagens.Add(ex.Message);
+            //}
+
+            if (mensagens.Any())
+                errors.Add(new ErrorDto()
+                {
+                    key = "sql",
+                    value = string.Join(" / ", mensagens)
+                });
+
+            return errors;
+        }
     }
-    
+
 }

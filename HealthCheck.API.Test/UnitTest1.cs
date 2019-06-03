@@ -2,8 +2,10 @@
 using HealthCheck.Helper;
 using HealthCheck.Helper.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using StructureMap;
 using System.Linq;
 using System.Web.Http.Results;
+using static HealthCheck.API.StructureMapConfig;
 
 namespace HealthCheck.API.Test
 {
@@ -13,7 +15,9 @@ namespace HealthCheck.API.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var controller = new HealthCheckController();
+            StructureMapConfig.Configure();
+
+            var controller = new HealthCheckController();// IoC.Container);
             var result = controller.Get() as OkNegotiatedContentResult<HealthCheckResponse>;
 
             Assert.IsFalse(result.Content.errors.Any());

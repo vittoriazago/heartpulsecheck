@@ -11,6 +11,8 @@ namespace HealthCheck.API
         {
             // Web API configuration and services
 
+            StructureMapConfig.Configure();
+
             // Web API routes
             config.MapHttpAttributeRoutes();
 

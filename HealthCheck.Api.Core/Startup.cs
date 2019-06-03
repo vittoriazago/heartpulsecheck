@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -34,12 +35,28 @@ namespace HealthCheck.Api.Core
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddSingleton<SqlServerHealthCheck>();
+            services.AddSingleton<SqlConnection>();
             services.AddHealthChecks()
                     .AddCheck<SqlServerHealthCheck>("sql")
               ;
 
-            services.AddSingleton<SqlServerHealthCheck>();
-            services.AddSingleton<SqlConnection>();
+
+            services.AddCors(
+              options => options.AddPolicy("AllowCors",
+              builder =>
+              {
+                  builder
+                      .AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+              })
+          );
+
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowCors"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +71,8 @@ namespace HealthCheck.Api.Core
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCors("AllowCors");
 
             var options = new HealthCheckOptions();
             options.ResultStatusCodes[HealthStatus.Unhealthy] = 418;

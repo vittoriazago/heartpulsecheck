@@ -11,6 +11,10 @@ namespace HealthCheck.API.Controllers
     {
         ISomeInterfaceNotImplemented _someInterfaceNotImplemented;
 
+        protected ValuesController()
+        {
+
+        }
         public ValuesController(ISomeInterfaceNotImplemented someInterfaceNotImplemented)
         {
             _someInterfaceNotImplemented = someInterfaceNotImplemented;
@@ -34,7 +38,7 @@ namespace HealthCheck.API.Controllers
     {
         public void doSomething()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }
