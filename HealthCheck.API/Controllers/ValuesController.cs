@@ -29,4 +29,12 @@ namespace HealthCheck.API.Controllers
     {
         void doSomething();
     }
+
+    public class SomeImplementation : ISomeInterfaceNotImplemented
+    {
+        public void doSomething()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
