@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using HealthCheck.Api.Core.HealthCheckers;
+﻿using HealthCheck.Api.Core.HealthCheckers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Reflection;
 
 namespace HealthCheck.Api.Core
 {
@@ -36,7 +29,7 @@ namespace HealthCheck.Api.Core
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSingleton<SqlServerHealthCheck>();
-            services.AddSingleton<SqlConnection>();
+            services.AddSingleton<SqlConnection>(s => new SqlConnection("Server=.;Trusted_Connection=True;Database=PONTOFIDELIDADE"));
             services.AddHealthChecks()
                     .AddCheck<SqlServerHealthCheck>("sql")
               ;
@@ -75,24 +68,31 @@ namespace HealthCheck.Api.Core
             app.UseCors("AllowCors");
 
             var options = new HealthCheckOptions();
-            options.ResultStatusCodes[HealthStatus.Unhealthy] = 418;
-            //options.ResponseWriter = () => { };
+            options.Predicate = _ => true;
+            options.AllowCachingResponses = false;
+            //options.ResultStatusCodes[HealthStatus.Unhealthy] = 418;
+            //options.ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse;
             options.ResponseWriter = async (c, r) =>
             {
-                c.Response.ContentType = "application/json";
-
-                var result = JsonConvert.SerializeObject(new
+                var settings = new JsonSerializerSettings()
                 {
-                    status = r.Status.ToString(),
-                    version = Assembly.GetCallingAssembly().GetName().Version,
-                    errors = r.Entries.Select(e => new { key = e.Key, value = e.Value.Status.ToString() })
-                });
-                await c.Response.WriteAsync(result);
+                    ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                };
+                settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
+                var uiReport = Helper.Models.UIHealthReport
+                    .CreateFrom(r);
+
+                var response = JsonConvert.SerializeObject(uiReport, settings);
+                await c.Response.WriteAsync(response);
             };
             app.UseHealthChecks("/hc", options);
-            
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
+
 }

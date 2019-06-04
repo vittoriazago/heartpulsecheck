@@ -9,7 +9,7 @@ namespace HealthCheck.Helper
 {
     public class HealthCheckHelper
     {
-        public static List<ErrorDto> TestaControllersInjection(string nomeAPI, IContainer container)
+        public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthReportEntry TestaControllersInjection(string nomeAPI, IContainer container)
         {
             var errors = new List<ErrorDto>();
             var mensagens = new List<string>();
@@ -31,6 +31,7 @@ namespace HealthCheck.Helper
                     mensagens.Add($"Erro ao instanciar controller: {controllerType.Name}; {ex.Message}");
                 }
             }
+            var teste = Microsoft.Extensions.Diagnostics.HealthChecks.HealthReportEntry();
             if (mensagens.Any())
                 errors.Add(new ErrorDto()
                 {

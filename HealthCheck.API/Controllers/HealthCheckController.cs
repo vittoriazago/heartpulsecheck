@@ -1,11 +1,8 @@
 ﻿using HealthCheck.Helper;
 using HealthCheck.Helper.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Web.Http;
 using static HealthCheck.API.StructureMapConfig;
 
@@ -13,20 +10,26 @@ namespace HealthCheck.API.Controllers
 {
     [RoutePrefix("hc")]
     public class HealthCheckController : ApiController
-    {        
+    {
         public IHttpActionResult Get()
         {
-            var errors = new List<ErrorDto>();
-            errors.AddRange(HealthCheckHelper.TestaControllersInjection("HealthCheck.API", IoC.Container));
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
 
-            return Ok(new HealthCheckResponse
-            {
-                status = errors.Any() ? HealthStatus.Unhealthy.ToString() : HealthStatus.Healthy.ToString(),
-                version = Assembly.GetExecutingAssembly().GetName().Version,
-                errors = errors
+            var entries = new Dictionary<string, HealthReportEntry>();
+            entries.Add("DI Controllers", HealthCheckHelper.TestaControllersInjection("HealthCheck.API", IoC.Container));
 
-            });
+            stopwatch.Stop();
+
+            var response = UIHealthReport.CreateFrom(
+                new HealthReport(entries, TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds)));
+
+            if (response.Status == UIHealthStatus.Healthy)
+                return Ok(response);
+            else
+                return Content((System.Net.HttpStatusCode)418, response);
+
         }
     }
-    
+
 }

@@ -30,6 +30,10 @@ namespace HealthCheck.Api.Core.HealthCheckers
             {
                 //return Task.FromResult(HealthCheckResult.Unhealthy());
             }
+            finally
+            {
+                _connection.Close();
+            }
 
             return Task.FromResult(HealthCheckResult.Healthy());
         }
