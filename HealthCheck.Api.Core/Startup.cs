@@ -76,13 +76,13 @@ namespace HealthCheck.Api.Core
             {
                 var settings = new JsonSerializerSettings()
                 {
-                    ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+                    //ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore,
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 };
-                settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                //settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
-                var uiReport = Helper.Models.UIHealthReport
+                var uiReport = HealthCheck.Helper.Models.UIHealthReport
                     .CreateFrom(r);
 
                 var response = JsonConvert.SerializeObject(uiReport, settings);

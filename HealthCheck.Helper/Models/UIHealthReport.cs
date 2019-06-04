@@ -14,7 +14,7 @@ namespace HealthCheck.Helper.Models
         public UIHealthReport(Dictionary<string, UIHealthReportEntry> entries, TimeSpan totalDuration)
         {
             Entries = entries;
-            TotalDuration = totalDuration;
+            TotalDuration = TimeSpan.FromMilliseconds(0);
             var assembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Version;
             Version = assembly.Major + "." + assembly.Minor + "." + assembly.Build + "." + assembly.Revision;
         }
@@ -31,7 +31,8 @@ namespace HealthCheck.Helper.Models
                 {
                     Data = item.Value.Data,
                     Description = item.Value.Description,
-                    Duration = item.Value.Duration,
+                    Duration = TimeSpan.FromMilliseconds(0),
+                    Exception = "",
                     Status = (UIHealthStatus)item.Value.Status
                 };
 
@@ -84,34 +85,4 @@ namespace HealthCheck.Helper.Models
         public string Exception { get; set; }
         public UIHealthStatus Status { get; set; }
     }
-    //public static class UIResponseWriter
-    //{
-    //    const string DEFAULT_CONTENT_TYPE = "application/json";
-
-    //    public static System.Threading.Tasks.Task WriteHealthCheckUIResponse(HttpContext httpContext, HealthReport report)
-    //    {
-    //        var response = "{}";
-
-    //        if (report != null)
-    //        {
-    //            var settings = new JsonSerializerSettings()
-    //            {
-    //                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
-    //                NullValueHandling = NullValueHandling.Ignore,
-    //                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-    //            };
-
-    //            settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-    //            httpContext.Response.ContentType = DEFAULT_CONTENT_TYPE;
-
-    //            var uiReport = HealthChecks.UI.Client.UIHealthReport
-    //                .CreateFrom(report);
-
-    //            response = JsonConvert.SerializeObject(uiReport, settings);
-    //        }
-
-    //        return httpContext.Response.WriteAsync(response);
-    //    }
-    //}
 }

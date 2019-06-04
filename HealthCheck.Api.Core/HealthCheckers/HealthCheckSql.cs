@@ -35,7 +35,7 @@ namespace HealthCheck.Api.Core.HealthCheckers
                 _connection.Close();
             }
 
-            return Task.FromResult(HealthCheckResult.Healthy());
+            return Task.FromResult(HealthCheckResult.Healthy("OK", new Dictionary<string, object>()));
         }
     }
 }

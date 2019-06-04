@@ -4,15 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HealthCheck.Helper
 {
     public class HealthCheckHelper
     {
-        public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthReportEntry TestaControllersInjection(string nomeAPI, IContainer container)
+        public static HealthReportEntry TestaControllersInjection(string nomeAPI, IContainer container)
         {
-            var errors = new List<ErrorDto>();
             var mensagens = new List<string>();
+
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
             var controllers = Assembly.Load(nomeAPI)
                                         .GetTypes()
                                         .Where(x => !string.IsNullOrEmpty(x.Namespace))
@@ -31,15 +34,13 @@ namespace HealthCheck.Helper
                     mensagens.Add($"Erro ao instanciar controller: {controllerType.Name}; {ex.Message}");
                 }
             }
-            var teste = Microsoft.Extensions.Diagnostics.HealthChecks.HealthReportEntry();
-            if (mensagens.Any())
-                errors.Add(new ErrorDto()
-                {
-                    key = "DI Controllers",
-                    value = string.Join(" / ", mensagens)
-                });
+            stopwatch.Stop();
 
-            return errors;
+            var entry = new HealthReportEntry(
+                       mensagens.Any() ? HealthStatus.Unhealthy : HealthStatus.Healthy,
+                       "", TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds), null, null);
+            
+            return entry;
         }
 
         public static List<ErrorDto> TestaConnectionString(string connectionString, string sql)
